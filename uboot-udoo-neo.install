@@ -1,0 +1,22 @@
+flash_uboot() {
+  echo "A new U-Boot version needs to be flashed onto /dev/mmcblk0."
+  echo "Do you want to do this now? [y|N]"
+  read -r shouldwe
+  if [[ $shouldwe =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    dd if=/boot/SPL of=/dev/mmcblk0 seek=1 bs=1k
+    dd if=/boot/u-boot.img of=/dev/mmcblk0 seek=69 bs=1k
+    sync
+  else
+    echo "You can do this later by running:"
+    echo "# dd if=/boot/SPL of=/dev/mmcblk0 seek=1 bs=1k"
+    echo "# dd if=/boot/u-boot.img of=/dev/mmcblk0 seek=69 bs=1k"
+  fi
+}
+
+post_install() {
+  flash_uboot
+}
+
+post_upgrade() {
+  flash_uboot
+}
